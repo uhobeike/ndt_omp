@@ -1,4 +1,8 @@
 #include "ndt_omp.h"
+
+#include <pcl/filters/random_sample.h>
+
+#include <fstream>
 /*
  * Software License Agreement (BSD License)
  *
@@ -911,12 +915,34 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
                            Eigen::AngleAxis<float> (static_cast<float> (x_t (4)), Eigen::Vector3f::UnitY ()) *
                            Eigen::AngleAxis<float> (static_cast<float> (x_t (5)), Eigen::Vector3f::UnitZ ())).matrix ();
 
+  //点群　750
+  //点群　1125をここで用意する
+  pcl::PointCloud<PointSource> cloud_1125;
+  pcl::PointCloud<PointSource> cloud_750;
+  pcl::RandomSample <PointSource> random;
+
+  random.setInputCloud(input_);
+  // random.setSeed (std::rand ());
+  random.setSample((unsigned int)(1125));
+  random.filter(cloud_1125);
+
+  random.setInputCloud(input_);
+  // random.setSeed (std::rand ());
+  random.setSample((unsigned int)(750));
+  random.filter(cloud_750);
+
+  // static std::ofstream writing_file;
+  // std::string filename = "/tmp/out.csv";
+  // writing_file.open(filename, std::ios::app);
+
+
   // New transformed point cloud
-  transformPointCloud (*input_, trans_cloud, final_transformation_);
+  transformPointCloud (cloud_750, trans_cloud, final_transformation_);
 
   // Updates score, gradient and hessian.  Hessian calculation is unnecessary but testing showed that most step calculations use the
   // initial step suggestion and recalculation the reusable portions of the hessian would intail more computation time.
   score = computeDerivatives (score_gradient, hessian, trans_cloud, x_t, true);
+
 
   // Calculate phi(alpha_t)
   double phi_t = -score;
@@ -955,9 +981,16 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
                              Eigen::AngleAxis<float> (static_cast<float> (x_t (4)), Eigen::Vector3f::UnitY ()) *
                              Eigen::AngleAxis<float> (static_cast<float> (x_t (5)), Eigen::Vector3f::UnitZ ())).matrix ();
 
+    // 点群の調整をここでやる
+    // 指標は、反復回数（1回目（750）、2回目（1125）、3回目以降（1500））
     // New transformed point cloud
     // Done on final cloud to prevent wasted computation
-    transformPointCloud (*input_, trans_cloud, final_transformation_);
+    if (step_iterations == 0)
+      transformPointCloud (cloud_750, trans_cloud, final_transformation_);
+    else if (step_iterations == 1)
+      transformPointCloud (cloud_1125, trans_cloud, final_transformation_);
+    else if (step_iterations > 2)
+      transformPointCloud (*input_, trans_cloud, final_transformation_);
 
     // Updates score, gradient. Values stored to prevent wasted computation.
     score = computeDerivatives (score_gradient, hessian, trans_cloud, x_t, false);
@@ -1004,11 +1037,15 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
     step_iterations++;
   }
 
+  // writing_file << std::to_string(step_iterations) << std::endl;
+
   // If inner loop was run then hessian needs to be calculated.
   // Hessian is unnecessary for step length determination but gradients are required
   // so derivative and transform data is stored for the next iteration.
   if (step_iterations)
     computeHessian (hessian, trans_cloud, x_t);
+
+  // writing_file.close();
 
   return (a_t);
 }
