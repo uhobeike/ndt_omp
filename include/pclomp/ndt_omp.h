@@ -155,6 +155,24 @@ namespace pclomp
 			init();
 		}
 
+    /** \brief Obtain a random sample of 750 points from the input point cloud pointer
+      * \param cloud the boost shared pointer to a PointCloud message
+      */
+    inline void
+    getRandom750Points (pcl::shared_ptr<pcl::PointCloud<PointSource>> &cloud)
+    {
+      pcl::copyPointCloud(random_750_points_, *cloud);
+    }
+
+    /** \brief Obtain a random sample of 1125 points from the input point cloud pointer
+      * \param cloud the boost shared pointer to a PointCloud message
+      */
+    inline void
+    getRandom1125Points (pcl::shared_ptr<pcl::PointCloud<PointSource>> &cloud)
+    {
+      pcl::copyPointCloud(random_1125_points_, *cloud);
+    }
+
 		/** \brief Set/change the voxel grid resolution.
 		  * \param[in] resolution side length of voxels
 		  */
@@ -344,6 +362,9 @@ namespace pclomp
 			ndt_params.num_threads = num_threads_;
 			return ndt_params;
 		}
+
+    pcl::PointCloud<PointSource> random_750_points_;
+    pcl::PointCloud<PointSource> random_1125_points_;
 
 	protected:
 

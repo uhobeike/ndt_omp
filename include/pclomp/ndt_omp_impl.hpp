@@ -931,6 +931,9 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
   random.setSample((unsigned int)(750));
   random.filter(cloud_750);
 
+  pcl::copyPointCloud(cloud_750, random_750_points_);
+  pcl::copyPointCloud(cloud_1125, random_750_points_);
+
   // static std::ofstream writing_file;
   // std::string filename = "/tmp/out.csv";
   // writing_file.open(filename, std::ios::app);
