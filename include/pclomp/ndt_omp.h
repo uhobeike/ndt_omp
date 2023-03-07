@@ -425,6 +425,14 @@ namespace pclomp
 				PointCloudSource &trans_cloud,
 				Eigen::Matrix<double, 6, 1> &p,
 				bool compute_hessian = true);
+    
+    double 
+      computeDerivatives(Eigen::Matrix<double, 6, 1> &score_gradient,
+        Eigen::Matrix<double, 6, 6> &hessian,
+        PointCloudSource input_cloud,
+        PointCloudSource &trans_cloud,
+        Eigen::Matrix<double, 6, 1> &p,
+        bool compute_hessian = true);
 
 		/** \brief Compute individual point contributions to derivatives of probability function w.r.t. the transformation vector.
 		  * \note Equation 6.10, 6.12 and 6.13 [Magnusson 2009].
