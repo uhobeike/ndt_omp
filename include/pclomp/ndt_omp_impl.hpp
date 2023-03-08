@@ -1164,15 +1164,23 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
     // 指標は、反復回数（1回目（750）、2回目（1125）、3回目以降（1500））
     // New transformed point cloud
     // Done on final cloud to prevent wasted computation
-    // if (step_iterations == 0)
+    if (step_iterations == 0){
       transformPointCloud (cloud_750, trans_cloud, final_transformation_);
-    // else if (step_iterations == 1)
-    //   transformPointCloud (cloud_1125, trans_cloud, final_transformation_);
+      score = computeDerivatives (score_gradient, hessian, cloud_750, trans_cloud, x_t, false);
+    }
+    else if (step_iterations == 1){
+      transformPointCloud (cloud_1125, trans_cloud, final_transformation_);
+      score = computeDerivatives (score_gradient, hessian, cloud_1125, trans_cloud, x_t, true);
+    }
+    else if (step_iterations > 1){
+      transformPointCloud (cloud_1125, trans_cloud, final_transformation_);
+      score = computeDerivatives (score_gradient, hessian, cloud_1125, trans_cloud, x_t, false);
+    }
     // else if (step_iterations > 1)
     //   transformPointCloud (*input_, trans_cloud, final_transformation_);
 
     // Updates score, gradient. Values stored to prevent wasted computation.
-    score = computeDerivatives (score_gradient, hessian, cloud_750, trans_cloud, x_t, false);
+    // score = computeDerivatives (score_gradient, hessian, cloud_750, trans_cloud, x_t, false);
 
     // Calculate phi(alpha_t+)
     phi_t = -score;
