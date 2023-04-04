@@ -1,7 +1,7 @@
 #include "ndt_omp.h"
 
 #include <pcl/filters/random_sample.h>
-
+#include <chrono>
 #include <fstream>
 /*
  * Software License Agreement (BSD License)
@@ -85,6 +85,9 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributi
 template<typename PointSource, typename PointTarget> void
 pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess)
 {
+  const auto exe_start_time_11 = std::chrono::system_clock::now();
+  const auto exe_start_time_12 = std::chrono::system_clock::now();
+
   nr_iterations_ = 0;
   converged_ = false;
 
@@ -129,18 +132,43 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeTransform
     regularization_pose_translation_ = regularization_pose_transformation.translation();
   }
 
-  // pcl::PointCloud<PointSource> cloud_750;
-  // pcl::RandomSample <PointSource> random;
+  pcl::PointCloud<PointSource> cloud_750;
+  pcl::RandomSample <PointSource> random;
 
-  // random.setInputCloud(input_);
-  // random.setSample((unsigned int)(750));
-  // random.filter(cloud_750);
+  random.setInputCloud(input_);
+  random.setSample((unsigned int)(750));
+  random.filter(cloud_750);
 
-  score = computeDerivatives (score_gradient, hessian, output, p);
-  // score = computeDerivatives (score_gradient, hessian, cloud_750, output, p);
+  // score = computeDerivatives (score_gradient, hessian, output, p);
+  score = computeDerivatives (score_gradient, hessian, *input_, output, p);
 
   // Calculate derivatives of initial transform vector, subsequent derivative calculations are done in the step length determination.
   // score = computeDerivatives (score_gradient, hessian, output, p);
+
+  const auto exe_end_time_12 = std::chrono::system_clock::now();
+  const double exe_time_12 =
+    std::chrono::duration_cast<std::chrono::microseconds>(exe_end_time_12 - exe_start_time_12).count() /
+    1000.0;
+  static std::vector<double> data_12;
+  static int cnt_12 = 0;
+  cnt_12++;
+  if (exe_time_12 > 0 && cnt_12 > 100){
+    data_12.push_back(exe_time_12);
+    double ave = 0.0, var = 0.0;
+    for(const auto &x : data_12){
+      ave += x;
+      var += x * x;
+    }
+    ave /= data_12.size();
+    var = var / data_12.size() - ave * ave;
+    std::ofstream writing_file;
+    std::string filename = "/tmp/exe_time_12.txt";
+    writing_file.open(filename, std::ios::out);
+    writing_file << ave << ", " << var << std::endl;
+    writing_file.close();
+  }
+
+  const auto exe_start_time_13 = std::chrono::system_clock::now();
 
   while (!converged_)
   {
@@ -196,6 +224,31 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeTransform
 
   }
 
+  const auto exe_end_time_13 = std::chrono::system_clock::now();
+  const double exe_time_13 =
+    std::chrono::duration_cast<std::chrono::microseconds>(exe_end_time_13 - exe_start_time_13).count() /
+    1000.0;
+  static std::vector<double> data_13;
+  static int cnt_13 = 0;
+  cnt_13++;
+  if (exe_time_13 > 0 && cnt_13 > 100){
+    data_13.push_back(exe_time_13);
+    double ave = 0.0, var = 0.0;
+    for(const auto &x : data_13){
+      ave += x;
+      var += x * x;
+    }
+    ave /= data_13.size();
+    var = var / data_13.size() - ave * ave;
+    std::ofstream writing_file;
+    std::string filename = "/tmp/exe_time_13.txt";
+    writing_file.open(filename, std::ios::out);
+    writing_file << ave << ", " << var << std::endl;
+    writing_file.close();
+  }
+
+  const auto exe_start_time_14 = std::chrono::system_clock::now();
+
   // Store transformation probability. The relative differences within each scan registration are accurate
   // but the normalization constants need to be modified for it to be globally accurate
   if (input_->points.empty()) {
@@ -206,6 +259,52 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeTransform
   }
 
   hessian_ = hessian;
+
+  const auto exe_end_time_14 = std::chrono::system_clock::now();
+  const double exe_time_14 =
+    std::chrono::duration_cast<std::chrono::microseconds>(exe_end_time_14 - exe_start_time_14).count() /
+    1000.0;
+  static std::vector<double> data_14;
+  static int cnt_14 = 0;
+  cnt_14++;
+  if (exe_time_14 > 0 && cnt_14 > 100){
+    data_14.push_back(exe_time_14);
+    double ave = 0.0, var = 0.0;
+    for(const auto &x : data_14){
+      ave += x;
+      var += x * x;
+    }
+    ave /= data_14.size();
+    var = var / data_14.size() - ave * ave;
+    std::ofstream writing_file;
+    std::string filename = "/tmp/exe_time_14.txt";
+    writing_file.open(filename, std::ios::out);
+    writing_file << ave << ", " << var << std::endl;
+    writing_file.close();
+  }
+
+  const auto exe_end_time_11 = std::chrono::system_clock::now();
+  const double exe_time_11 =
+    std::chrono::duration_cast<std::chrono::microseconds>(exe_end_time_11 - exe_start_time_11).count() /
+    1000.0;
+  static std::vector<double> data_11;
+  static int cnt_11 = 0;
+  cnt_11++;
+  if (exe_time_11 > 0 && cnt_11 > 100){
+    data_11.push_back(exe_time_11);
+    double ave = 0.0, var = 0.0;
+    for(const auto &x : data_11){
+      ave += x;
+      var += x * x;
+    }
+    ave /= data_11.size();
+    var = var / data_11.size() - ave * ave;
+    std::ofstream writing_file;
+    std::string filename = "/tmp/exe_time_11.txt";
+    writing_file.open(filename, std::ios::out);
+    writing_file << ave << ", " << var << std::endl;
+    writing_file.close();
+  }
 }
 
 #ifndef _OPENMP
@@ -1039,6 +1138,7 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
                                                                                   double step_min, double &score, Eigen::Matrix<double, 6, 1> &score_gradient, Eigen::Matrix<double, 6, 6> &hessian,
                                                                                   PointCloudSource &trans_cloud)
 {
+  const auto exe_start_time_3 = std::chrono::system_clock::now();
   // Set the value of phi(0), Equation 1.3 [More, Thuente 1994]
   double phi_0 = -score;
   // Set the value of phi'(0), Equation 1.3 [More, Thuente 1994]
@@ -1094,36 +1194,83 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
                            Eigen::AngleAxis<float> (static_cast<float> (x_t (4)), Eigen::Vector3f::UnitY ()) *
                            Eigen::AngleAxis<float> (static_cast<float> (x_t (5)), Eigen::Vector3f::UnitZ ())).matrix ();
 
+  const auto exe_start_time_4 = std::chrono::system_clock::now();
   //点群　750
   //点群　1125をここで用意する
-  pcl::PointCloud<PointSource> cloud_1125;
-  pcl::PointCloud<PointSource> cloud_750;
+  pcl::shared_ptr<pcl::PointCloud<PointSource>> cloud_1125(
+    new pcl::PointCloud<PointSource>);
+  pcl::shared_ptr<pcl::PointCloud<PointSource>> cloud_750(
+    new pcl::PointCloud<PointSource>);
   pcl::RandomSample <PointSource> random;
 
   random.setInputCloud(input_);
   random.setSample((unsigned int)(1125));
-  random.filter(cloud_1125);
+  random.filter(*cloud_1125);
 
-  random.setInputCloud(input_);
+  random.setInputCloud(cloud_1125);
   random.setSample((unsigned int)(750));
-  random.filter(cloud_750);
+  random.filter(*cloud_750);
+  const auto exe_end_time_4 = std::chrono::system_clock::now();
+  const double exe_time_4 =
+  std::chrono::duration_cast<std::chrono::microseconds>(exe_end_time_4 - exe_start_time_4).count() /
+    1000.0;
+  static std::vector<double> data_4;
+  static int cnt_4 = 0;
+  cnt_4++;
+  if (exe_time_4 > 0 && cnt_4 > 100){
+    data_4.push_back(exe_time_4);
+    double ave = 0.0, var = 0.0;
+    for(const auto &x : data_4){
+      ave += x;
+      var += x * x;
+    }
+    ave /= data_4.size();
+    var = var / data_4.size() - ave * ave;
+    std::ofstream writing_file;
+    std::string filename = "/tmp/exe_time_4.txt";
+    writing_file.open(filename, std::ios::out);
+    writing_file << ave << ", " << var << std::endl;
+    writing_file.close();
+  }
 
-  pcl::copyPointCloud(cloud_750, random_750_points_);
-  pcl::copyPointCloud(cloud_1125, random_1125_points_);
+  // pcl::copyPointCloud(cloud_750, random_750_points_);
+  // pcl::copyPointCloud(cloud_1125, random_1125_points_);
 
   // static std::ofstream writing_file;
   // std::string filename = "/tmp/out.csv";
   // writing_file.open(filename, std::ios::app);
 
+  const auto exe_start_time_5 = std::chrono::system_clock::now();
   // New transformed point cloud
-  // transformPointCloud (cloud_750, trans_cloud, final_transformation_);
-  transformPointCloud (*input_, trans_cloud, final_transformation_);
+  transformPointCloud (*cloud_750, trans_cloud, final_transformation_);
+  // transformPointCloud (*input_, trans_cloud, final_transformation_);
 
   // Updates score, gradient and hessian.  Hessian calculation is unnecessary but testing showed that most step calculations use the
   // initial step suggestion and recalculation the reusable portions of the hessian would intail more computation time.
   score = computeDerivatives (score_gradient, hessian, trans_cloud, x_t);
   // score = computeDerivatives (score_gradient, hessian, cloud_750, trans_cloud, x_t, true);
-
+  const auto exe_end_time_5 = std::chrono::system_clock::now();
+  const double exe_time_5 =
+  std::chrono::duration_cast<std::chrono::microseconds>(exe_end_time_5 - exe_start_time_5).count() /
+    1000.0;
+  static std::vector<double> data_5;
+  static int cnt_5 = 0;
+  cnt_5++;
+  if (exe_time_5 > 0 && cnt_5 > 100){
+    data_5.push_back(exe_time_5);
+    double ave = 0.0, var = 0.0;
+    for(const auto &x : data_5){
+      ave += x;
+      var += x * x;
+    }
+    ave /= data_5.size();
+    var = var / data_5.size() - ave * ave;
+    std::ofstream writing_file;
+    std::string filename = "/tmp/exe_time_5.txt";
+    writing_file.open(filename, std::ios::out);
+    writing_file << ave << ", " << var << std::endl;
+    writing_file.close();
+  }
 
   // Calculate phi(alpha_t)
   double phi_t = -score;
@@ -1135,6 +1282,7 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
   // Calculate psi'(alpha_t)
   double d_psi_t = auxiliaryFunction_dPsiMT (d_phi_t, d_phi_0, mu);
 
+  const auto exe_start_time_6 = std::chrono::system_clock::now();
   // Iterate until max number of iterations, interval convergence or a value satisfies the sufficient decrease, Equation 1.1, and curvature condition, Equation 1.2 [More, Thuente 1994]
   while (!interval_converged && step_iterations < max_step_iterations && !(psi_t <= 0 /*Sufficient Decrease*/ && d_phi_t <= -nu * d_phi_0 /*Curvature Condition*/))
   {
@@ -1167,15 +1315,17 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
     // New transformed point cloud
     // Done on final cloud to prevent wasted computation
     if (step_iterations == 0){
-      transformPointCloud (cloud_750, trans_cloud, final_transformation_);
-      score = computeDerivatives (score_gradient, hessian, cloud_750, trans_cloud, x_t, false);
+      transformPointCloud (*cloud_750, trans_cloud, final_transformation_);
+      score = computeDerivatives (score_gradient, hessian, *cloud_750, trans_cloud, x_t, false);
     }
     else if (step_iterations == 1){
-      transformPointCloud (cloud_1125, trans_cloud, final_transformation_);
-      score = computeDerivatives (score_gradient, hessian, cloud_1125, trans_cloud, x_t, false);
+      transformPointCloud (*cloud_750, trans_cloud, final_transformation_);
+      // transformPointCloud (*cloud_1125, trans_cloud, final_transformation_);
+      score = computeDerivatives (score_gradient, hessian, *cloud_1125, trans_cloud, x_t, false);
     }
     else if (step_iterations > 1){
-      transformPointCloud (*input_, trans_cloud, final_transformation_);
+      transformPointCloud (*cloud_750, trans_cloud, final_transformation_);
+      // transformPointCloud (*input_, trans_cloud, final_transformation_);
       score = computeDerivatives (score_gradient, hessian, *input_, trans_cloud, x_t, false);
     }
     // Updates score, gradient. Values stored to prevent wasted computation.
@@ -1222,17 +1372,82 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
 
     step_iterations++;
   }
+  const auto exe_end_time_6 = std::chrono::system_clock::now();
+  const double exe_time_6 =
+  std::chrono::duration_cast<std::chrono::microseconds>(exe_end_time_6 - exe_start_time_6).count() /
+    1000.0;
+  static std::vector<double> data_6;
+  static int cnt_6 = 0;
+  cnt_6++;
+  if (exe_time_6 > 0 && cnt_6 > 100){
+    data_6.push_back(exe_time_6);
+    double ave = 0.0, var = 0.0;
+    for(const auto &x : data_6){
+      ave += x;
+      var += x * x;
+    }
+    ave /= data_6.size();
+    var = var / data_6.size() - ave * ave;
+    std::ofstream writing_file;
+    std::string filename = "/tmp/exe_time_6.txt";
+    writing_file.open(filename, std::ios::out);
+    writing_file << ave << ", " << var << std::endl;
+    writing_file.close();
+  }
 
   // writing_file << std::to_string(step_iterations) << std::endl;
 
   // If inner loop was run then hessian needs to be calculated.
   // Hessian is unnecessary for step length determination but gradients are required
   // so derivative and transform data is stored for the next iteration.
+  const auto exe_start_time_7 = std::chrono::system_clock::now();
   if (step_iterations)
     computeHessian (hessian, trans_cloud, x_t);
+  const auto exe_end_time_7 = std::chrono::system_clock::now();
+  const double exe_time_7 =
+  std::chrono::duration_cast<std::chrono::microseconds>(exe_end_time_7 - exe_start_time_7).count() /
+    1000.0;
+  static std::vector<double> data_7;
+  static int cnt_7 = 0;
+  cnt_7++;
+  if (exe_time_7 > 0 && cnt_7 > 100){
+    data_7.push_back(exe_time_7);
+    double ave = 0.0, var = 0.0;
+    for(const auto &x : data_7){
+      ave += x;
+      var += x * x;
+    }
+    ave /= data_7.size();
+    var = var / data_7.size() - ave * ave;
+    std::ofstream writing_file;
+    std::string filename = "/tmp/exe_time_7.txt";
+    writing_file.open(filename, std::ios::out);
+    writing_file << ave << ", " << var << std::endl;
+    writing_file.close();
+  }
 
-  // writing_file.close();
-
+  const auto exe_end_time_3 = std::chrono::system_clock::now();
+  const double exe_time_3 =
+  std::chrono::duration_cast<std::chrono::microseconds>(exe_end_time_3 - exe_start_time_3).count() /
+    1000.0;
+  static std::vector<double> data_3;
+  static int cnt_3 = 0;
+  cnt_3++;
+  if (exe_time_3 > 0 && cnt_3 > 100){
+    data_3.push_back(exe_time_3);
+    double ave = 0.0, var = 0.0;
+    for(const auto &x : data_3){
+      ave += x;
+      var += x * x;
+    }
+    ave /= data_3.size();
+    var = var / data_3.size() - ave * ave;
+    std::ofstream writing_file;
+    std::string filename = "/tmp/exe_time_3.txt";
+    writing_file.open(filename, std::ios::out);
+    writing_file << ave << ", " << var << std::endl;
+    writing_file.close();
+  }
   return (a_t);
 }
 
