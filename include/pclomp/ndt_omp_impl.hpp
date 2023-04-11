@@ -1242,13 +1242,13 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
 
   const auto exe_start_time_5 = std::chrono::system_clock::now();
   // New transformed point cloud
-  transformPointCloud (*cloud_750, trans_cloud, final_transformation_);
-  // transformPointCloud (*input_, trans_cloud, final_transformation_);
+  // transformPointCloud (*cloud_750, trans_cloud, final_transformation_);
+  transformPointCloud (*input_, trans_cloud, final_transformation_);
 
   // Updates score, gradient and hessian.  Hessian calculation is unnecessary but testing showed that most step calculations use the
   // initial step suggestion and recalculation the reusable portions of the hessian would intail more computation time.
-  score = computeDerivatives (score_gradient, hessian, trans_cloud, x_t);
-  // score = computeDerivatives (score_gradient, hessian, cloud_750, trans_cloud, x_t, true);
+  score = computeDerivatives (score_gradient, hessian, trans_cloud, x_t, true);
+  // score = computeDerivatives (score_gradient, hessian, *cloud_750, trans_cloud, x_t, true);
   const auto exe_end_time_5 = std::chrono::system_clock::now();
   const double exe_time_5 =
   std::chrono::duration_cast<std::chrono::microseconds>(exe_end_time_5 - exe_start_time_5).count() /
@@ -1314,20 +1314,20 @@ pclomp::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengt
     // 指標は、反復回数（1回目（750）、2回目（1125）、3回目以降（1500））
     // New transformed point cloud
     // Done on final cloud to prevent wasted computation
-    if (step_iterations == 0){
-      transformPointCloud (*cloud_750, trans_cloud, final_transformation_);
-      score = computeDerivatives (score_gradient, hessian, *cloud_750, trans_cloud, x_t, false);
-    }
-    else if (step_iterations == 1){
-      transformPointCloud (*cloud_750, trans_cloud, final_transformation_);
-      // transformPointCloud (*cloud_1125, trans_cloud, final_transformation_);
-      score = computeDerivatives (score_gradient, hessian, *cloud_1125, trans_cloud, x_t, false);
-    }
-    else if (step_iterations > 1){
-      transformPointCloud (*cloud_750, trans_cloud, final_transformation_);
-      // transformPointCloud (*input_, trans_cloud, final_transformation_);
+    // if (step_iterations == 0){
+      transformPointCloud (*input_, trans_cloud, final_transformation_);
       score = computeDerivatives (score_gradient, hessian, *input_, trans_cloud, x_t, false);
-    }
+    // }
+    // else if (step_iterations == 1){
+    //   transformPointCloud (*cloud_750, trans_cloud, final_transformation_);
+    //   // transformPointCloud (*cloud_1125, trans_cloud, final_transformation_);
+    //   score = computeDerivatives (score_gradient, hessian, *cloud_1125, trans_cloud, x_t, false);
+    // }
+    // else if (step_iterations > 1){
+    //   transformPointCloud (*cloud_750, trans_cloud, final_transformation_);
+    //   // transformPointCloud (*input_, trans_cloud, final_transformation_);
+    //   score = computeDerivatives (score_gradient, hessian, *input_, trans_cloud, x_t, false);
+    // }
     // Updates score, gradient. Values stored to prevent wasted computation.
     // score = computeDerivatives (score_gradient, hessian, cloud_750, trans_cloud, x_t, false);
 
